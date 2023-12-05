@@ -11,6 +11,9 @@ Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11"""
 #cards = example.split('\n')
 cards = open("input.txt","r").readlines()
 
+def getCardId(card):
+    return int(card.split(':')[0].split(' ')[-1])
+
 def getWinningSet(card):
     winningNumbers = card.split(':')[1].split('|')[0].split(' ')
     return set([ int(i) for i in winningNumbers if i != ''])
@@ -29,3 +32,23 @@ for card in cards:
         sum += pointValue
 
 print(f"Solution 1: {sum}")
+
+cardDict = {}
+for card in cards:
+    cardDict[getCardId(card)] = (1, getWinningSet(card), getCardNumbers(card))
+
+for id in cardDict:
+    processNumber, winningSet, cardNumbers = cardDict[id]
+    commonSet = winningSet & cardNumbers
+    if len(commonSet) > 0:
+        for j in range(processNumber):
+            for i in range(len(commonSet)):
+                newProcessNum, wSet, cN = cardDict[id+i+1]
+                cardDict[id+i+1] = (newProcessNum+1, wSet, cN)
+
+total = 0
+for id in cardDict:
+    processNumber, winningSet, cardNumbers = cardDict[id]
+    total += processNumber
+
+print(f"Solution 2: {total}")
